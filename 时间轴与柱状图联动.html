@@ -1,0 +1,186 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">  
+    <title>a</title>  
+    <style>  
+        body{background-color:#000000}  
+    </style>  
+</head>  
+<body>  
+<div id="main" style="height:500px;width: 100%; margin-left: 0px;float: left;"></div>  
+<!--    本地引入ECharts,'js/dist/'本地文件路径下 -->  
+<script src="http://echarts.baidu.com/build/dist/echarts.js"></script>  
+<script src="http://echarts.baidu.com/doc/example/timelineOption.js"></script>  
+<script type="text/javascript">  
+    //        路径配置,'./js/dist'本地文件路径  
+    require.config({  
+        paths: {  
+            echarts: 'http://echarts.baidu.com/build/dist'  
+        }  
+    });  
+    require(  
+            [  
+                'echarts',  
+                'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表  
+                'echarts/chart/bar'  
+            ],  
+            function (ec) {  
+                var myChart = ec.init(document.getElementById('main'));  
+                var text = '[{"NAME":"2002-01-01","VAL":"53"},{"NAME":"2003-01-01","VAL":"20"},{"NAME":"2004-01-01","VAL":"33"},{"NAME":"2005-01-01","VAL":"43"},{"NAME":"2006-01-01","VAL":"28"},{"NAME":"2007-01-01","VAL":"29"},{"NAME":"2008-01-01","VAL":"43"},{"NAME":"2009-01-01","VAL":"28"},{"NAME":"2010-01-01","VAL":"29"},{"NAME":"2011-01-01","VAL":"29"}]';  
+                var json = JSON.parse(text);  
+  
+                option = {  
+                    timeline:{  
+                        data:(function(){  
+                            var data=[];  
+                            for(var i=0;i<json.length;i++){  
+                                data.push(json[i].NAME);  
+                                console.log(json[i].NAME);  
+                            }  
+                            return data;  
+                        })(),  
+                        label : {  
+                            formatter : function(s) {  
+                                return s.slice(0, 4);  
+                            }  
+                        }
+                    },  
+                    options:(function(){  
+                        var options=[];  
+                        for(var i=0;i<json.length;i++){  
+                            if(i==0){  
+                                options.push({  
+                                    title : {  
+                                        'text':'2002全国宏观经济指标',  
+                                        'subtext':'数据来自国家统计局'  
+                                    },  
+                                    tooltip : {'trigger':'axis'},  
+                                    legend : {  
+                                        x:'right',  
+                                        'data':['GDP','金融','房地产','第一产业','第二产业','第三产业'],  
+                                        'selected':{  
+                                            'GDP':true,  
+                                            '金融':false,  
+                                            '房地产':true,  
+                                            '第一产业':false,  
+                                            '第二产业':false,  
+                                            '第三产业':false  
+                                        }  
+                                    },  
+                                    toolbox : {  
+                                        'show':true,  
+                                        orient : 'vertical',  
+                                        x: 'right',  
+                                        y: 'center',  
+                                        'feature':{  
+                                            'mark':{'show':true},  
+                                            'dataView':{'show':true,'readOnly':false},  
+                                            'magicType':{'show':true,'type':['line','bar','stack','tiled']},  
+                                            'restore':{'show':true},  
+                                            'saveAsImage':{'show':true}  
+                                        }  
+                                    },  
+                                    calculable : true,  
+                                    grid : {'y':80,'y2':100},  
+                                    xAxis : [{  
+                                        'type':'category',  
+                                        'axisLabel':{'interval':0},  
+                                        'data':[  
+                                            '北京','\n天津','河北','\n山西','内蒙古','\n辽宁','吉林','\n黑龙江',  
+                                            '上海','\n江苏','浙江','\n安徽','福建','\n江西','山东','\n河南',  
+                                            '湖北','\n湖南','广东','\n广西','海南','\n重庆','四川','\n贵州',  
+                                            '云南','\n西藏','陕西','\n甘肃','青海','\n宁夏','新疆'  
+                                        ]  
+                                    }],  
+                                    yAxis : [  
+                                        {  
+                                            'type':'value',  
+                                            'name':'GDP（亿元）',  
+                                            'max':53500  
+                                        },  
+                                        {  
+                                            'type':'value',  
+                                            'name':'其他（亿元）'  
+                                        }  
+                                    ],  
+                                    series : [  
+                                        {  
+                                            'name':'GDP',  
+                                            'type':'bar',  
+                                            'markLine':{  
+                                                symbol : ['arrow','none'],  
+                                                symbolSize : [4, 2],  
+                                                itemStyle : {  
+                                                    normal: {  
+                                                        lineStyle: {color:'orange'},  
+                                                        barBorderColor:'orange',  
+                                                        label:{  
+                                                            position:'left',  
+                                                            formatter:function(params){  
+                                                                return Math.round(params.value);  
+                                                            },  
+                                                            textStyle:{color:'orange'}  
+                                                        }  
+                                                    }  
+                                                },  
+                                                'data':[{'type':'average','name':'平均值'}]  
+                                            },  
+                                            'data': dataMap.dataGDP['2002']  
+                                        },  
+                                        {  
+                                            'name':'金融','yAxisIndex':1,'type':'bar',  
+                                            'data': dataMap.dataFinancial['2002']  
+                                        },  
+                                        {  
+                                            'name':'房地产','yAxisIndex':1,'type':'bar',  
+                                            'data': dataMap.dataEstate['2002']  
+                                        },  
+                                        {  
+                                            'name':'第一产业','yAxisIndex':1,'type':'bar',  
+                                            'data': dataMap.dataPI['2002']  
+                                        },  
+                                        {  
+                                            'name':'第二产业','yAxisIndex':1,'type':'bar',  
+                                            'data': dataMap.dataSI['2002']  
+                                        },  
+                                        {  
+                                            'name':'第三产业','yAxisIndex':1,'type':'bar',  
+                                            'data': dataMap.dataTI['2002']  
+                                        }  
+                                    ]  
+  
+                                });  
+                            }else{  
+                                var year = json[i].NAME.slice(0, 4);  
+                                options.push({  
+                                    title : {'text':year+'全国宏观经济指标'},  
+                                    series : [  
+                                        {'data': dataMap.dataGDP[year]},  
+                                        {'data': dataMap.dataFinancial[year]},  
+                                        {'data': dataMap.dataEstate[year]},  
+                                        {'data': dataMap.dataPI[year]},  
+                                        {'data': dataMap.dataSI[year]},  
+                                        {'data': dataMap.dataTI[year]}  
+                                    ]  
+  
+                                });  
+                            }  
+                        }  
+                        return options;  
+                    })()  
+                };  
+  
+  
+                myChart.setOption(option);  
+            }  
+    );  
+</script>  
+  
+<?php  
+  
+  
+?>  
+  
+</body>  
+</html>  
