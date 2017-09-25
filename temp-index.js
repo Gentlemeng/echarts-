@@ -19,7 +19,6 @@ $().ready(function () {
     $.get('json/china.json', function (mapJson) {
         echarts.registerMap('china', mapJson);
         var chart = echarts.init(document.getElementById('china_map')); //在id为mainMap的dom元素中显示地图
-        var option;
         // var options = [];
         //储存时间的json数组
         var timeData=[]
@@ -34,7 +33,7 @@ $().ready(function () {
                     var time = result[i].series.date;
                     timeData.push(time);
                 }
-                option = {
+                var option = {
                     baseOption: {
                         visualMap: {
                             type: 'continuous',
@@ -88,13 +87,13 @@ $().ready(function () {
                             formatter: function (result) { //回调函数，参数params具体格式参加官方API
                                 return result.name + '<br />数据:' + result.value;
                             },
-                            series: [{
-                                type: 'map',
-                                name: '总量',
-                                map: 'china',
-                                roam: true,
-                                // nameMap: nameMap
-                            }]
+                            // series: [{
+                            //     type: 'map',
+                            //     name: '总量',
+                            //     map: 'china',
+                            //     roam: true,
+                            //     // nameMap: nameMap
+                            // }]
                         },
                         dataRange: {
                             min: 0,
@@ -323,32 +322,28 @@ $().ready(function () {
                 //通过省的名称来获取省的行政代码
                 var proName=proData.name,
                 areaCode;
-                // console.log(proName);
                 for(var i=0;i<treeData.area.length;i++){
                     if(treeData.area[i].text==proName){
                         areaCode=treeData.area[i].id;
                     }
                 }
-                // console.log(areaCode);
+                console.log(areaCode);
+                orderByPro(null,areaCode);
                 //本省高亮
+
                 //
                 function orderByPro (date,areaCode){
                     $('#areaCode').val(areaCode)
-                    // console.log($('.industry option:selected').attr('id'))
-                    $('#industry').val($('.industry option:selected').attr('id'));
-                    $('#indexName').val($('.indexName option:selected').val())
+                    $('#industry').val($('.industry selected').attr('id'));
+                    $('#indexName').val($('.indexName selected').val())
                     $('#date').val(date);
                     var formData=$('#form').serialize();
                     //请求本省在全国的排名数据
                     var orderByALL={
-                        url:url+'/findRankVaDatas',
-                        // type:'get',
+                        url:url+'',
+                        type:'get',
                         data:formData,
                         success:function(result){
-                            if(!result){
-                                alert('该地区数据不存在');
-                                return 
-                            }
                             console.log(result);
                             //渲染柱状图
                             var areaNameData=[],values=[];
@@ -356,55 +351,28 @@ $().ready(function () {
                                 areaNameData.push(result.countryRank[i].name);
                                 values.push(result.countryRank[i].value)
                             }
-                            
-                            var orderOptions=option.options;
-                            // console.log(orderOptions[0].series[1].data)
-                            //将options中的xy轴数据删除，并添加上排名之后的数据
-                            for(var i=0;i<timeData.length;i++){
-                                //删除掉x(name)和y(value)的配置
-                                orderOptions[i].xAxis.data=null;//从第0位开始，删除一个
-                                orderOptions[i].series[1].data=null;//从第1位开始，删除一个
-                                if(date==timeData[i]){
-                                    orderOptions[i].xAxis.data=areaNameData;
-                                    orderOptions[i].series[1].data=values;
-                                }else if(!date){
-                                    orderOptions[0].xAxis.data=areaNameData;
-                                    orderOptions[0].series[1].data=values; 
-                                }
-                            }
-                            // console.log(orderOptions);
-                            //依据时间数组 找到需要修改的options中xAxis\data的值
-                            // for(var i=0;i<timeData.length;i++){
-                            //     if(!date){
-                            //         orderOptions[0].xAxis.data=areaNameData;
-                            //         orderOptions[0].series[1].data=values; 
-                            //     }else if(date==timeData[i]){
-                            //         console.log(i);
-                            //         orderOptions[i].xAxis.data=areaNameData;
-                            //         orderOptions[i].series[1].data=values; 
-                            //     }
-                            // }                  
+                            var orderOptions=option.baseOption.options;
+                            orderOptions[0].xAxis.data=areaNameData;
+                            orderOptions[0].series[1].data=values;                        
                             // for(var i=0;i<orderOptions.length;i++){
                             //     orderOptions[i].xAxis.data=areaNameData;
                             //     orderOptions[i].series[1].data=values;
                             // }
-                            chart.setOption(option); 
+
+                            
                         }
                     }
-                    $.ajax(orderByALL)
+                    // $.ajax(orderByALL)
                 }
-                orderByPro(null,areaCode);
+                chart.on('timelinechanged',function(timeChangeData){
+                    // console.log(timeChangeData);
+                    // console.log(timeData[timeChangeData.currentIndex])
+                    //通过timeChangeData的索引和timeData来获取目标时间
+                    var targetTime=timeData[timeChangeData.currentIndex]
+                    orderByPro(targetTime,areaCode);
+                })
             }
-            chart.on('timelinechanged',function(timeChangeData){
-                // console.log(timeChangeData);
-                console.log(timeData[timeChangeData.currentIndex])
-                //通过timeChangeData的索引和timeData来获取目标时间
-                var targetTime=timeData[timeChangeData.currentIndex]
-                orderByPro(targetTime,areaCode);
-                
-            })
         })
-       
 
 
         //下钻到省
@@ -415,220 +383,77 @@ $().ready(function () {
             }
             //选择省的单击事件
             var selectProe = result.name;
-            // console.log(selectProe);
+            console.log(selectProe);
 
             //调取后台数据
             $.get('json/' + selectProe + '/' + selectProe + '.json', function (Citymap) {
                 // console.log(Citymap);
+                charts.restore();
 
                 echarts.registerMap(selectProe, Citymap);
                 var myChartProe = echarts.init(document.getElementById('china_map'));
                 var option = {
-                    baseOption:{
-                        visualMap: {
-                            type: 'continuous',
-                            max: 30000000,
-                            min: 0,
-                            bottom: '10%',
-                            itemWidth: 20,
-                            itemHeight: 140,
-                            show: true,
-                            calculable: true,
-                            inRange: {
-                                // color: ['yellow','lightskyblue', 'orangered']
-                            }
+                    tooltip: 
+                    {
+                        trigger: 'item',
+                        formatter: function loadData(result) { //回调函数，参数params具体格式参加官方API
+                            return result.name + '<br />数据:' + result.value;
+                        }
+                    },
+                    dataRange: 
+                    {
+                        min: 0,
+                        max: 45000000,
+                        splitNumber: 0,
+                        text: ['高', '低'],
+                        realtime: false,
+                        calculable: false,
+                        selectedMode: false,
+                        realtime: false,
+                        show: true,
+                        itemWidth: 20,
+                        itemHeight: 100,
+                        color: ['#8a0c21', '#4a2f44', '#095272']
+                    },
+                    title: {
+                        text: selectProe + '数据总览',
+                        //subtext:'',
+                        x: 'center',
+                        y: 'top',
+                        textAlign: 'left'
+                    },
+                    series: [{
+                        type: 'map',
+                        map: selectProe, //要和echarts.registerMap（）中第一个参数一致
+                        top:'10%',
+                        left: '10%',
+                        width: '30%',
+                        //
+                        roam: true,
+                        scaleLimit: {
+                            min: 0.8,
+                            max: 1.9
+                        }, //缩放
+                        mapLocation: {
+                            y: 60
                         },
-                        timeline: {
-                            axisType: 'category',
-                            data: [2017-01-31,2017-02-28],
-                            //默认选择第几项
-                            // currentIndex:,
-                            autoPlay: false,
-                            playInterval: 1000,
-                            //播放按钮的位置
-                            controlPosition: 'right',
-                            left: '5%',
-                            width: '35%',
-                            //标记的图形样式
-                            // symbol:'arrow',
-                            symbolSize: '8',
-                            // symbolOffset:'',
-                            lineStyle: {
-                                // color:'red'
-                            },
-                            label: {
-                                normal: {
-                                    color: '#ddd'
-                                }
-                            },
-                            controlStyle: {
-                                normal: {
-                                    color: '#ddd'
-                                }
-                            },
-                            tooltip: {
-                                formatter: function (result) { //回调函数，参数params具体格式参加官方API
-                                    return result.name;
-                                }
-                            }
-                        },
-                        tooltip:{
-                            trigger: 'item',
-                            formatter: function loadData(result) { //回调函数，参数params具体格式参加官方API
-                                return result.name + '<br />数据:' + result.value;
-                            }
-                        },
-                        dataRange:{
-                            min: 0,
-                            max: 30000000,
-                            splitNumber: 0,
-                            text: ['高', '低'],
-                            realtime: false,
-                            calculable: false,
-                            selectedMode: false,
-                            realtime: false,
-                            show: true,
-                            itemWidth: 20,
-                            itemHeight: 100,
-                            color: ['#8a0c21', '#4a2f44', '#095272']
-                        },
-                        title: {
-                            text: selectProe + '数据总览',
-                            //subtext:'',
-                            x: '25%',
-                            y: '5%',
-                            textAlign: 'center',
-                            textStyle:{
-                                color:'#ccc'
-                            }
-                        },
-                        grid:[
-                            //上面的柱状图
-                        {
-                            right: '10%',
-                            width: '40%',
-                            height: '35%'
-                        },
-                        //下面的柱状图
-                        // {
-                        //     bottom: '5%',
-                        //     right: '10%',
-                        //     width: '40%',
-                        //     height: '35%'
-                        // }
-                        ],
-                        xAxis: {},
-                        yAxis: {},
-                        //地图和柱状图
-                        series: [{
-                            id:'map',
-                            type: 'map',
-                            map: selectProe, //要和echarts.registerMap（）中第一个参数一致
-                            bottom: '10%',
-                            left: '10%',
-                            width: '10%',
-                            //
-                            roam: true,
-                            itemSytle: {
-                                emphasis: {
-                                    label: {
-                                        show: true
-                                    }
-                                }
-                            },
-                            label: {
-                                normal: {
-                                    show: true,
-                                    color:'#fff'
-                                },
-                                emphasis: {
+                        itemSytle: {
+                            emphasis: {
+                                label: {
                                     show: true
                                 }
-                            },
-                            markLine:{
-                                silent:true
-                            },
-                            data: [] 
-                        },{
-                            id: 'bar',
-                            name: '排名',
-                            type: 'bar',
-                            left: '50%',
-                            xAxisIndex: 0,
-                            yAxisIndex: 0,
-                            //设置移入时才显示标签
-                            label: {
-                                emphasis: {
-                                    show: true,
-                                }
-                            },
-                            itemStyle: {
-                                emphasis: {
-                                    color: "rgb(254,153,78)"
-                                }
-                            },
-                        }]
-                    },
-                    options:[]
-                }
-                // {name:'邯郸市',value:'10000000'},{name:'石家庄市',value:'10000000'},{name:'廊坊市',value:'10000000'},{name:'张家口市',value:'10000000'},{name:'承德市',value:'10000000'},
-                //给地图和柱状图添加数据
-                var result=[
-                    {series:{data:{name:'邯郸市',value:10000000}},date:'2007-01-31'},
-                    {series:{data:{name:'邯郸市',value:10000000}},date:'2007-01-31'}
-                ]
-                for (var i = 0; i < result.length; i++) {
-                    option.options.push({
-                        xAxis: {
-                            type: 'category',
-                            // boundaryGap: [0, 0.1],
-                            axisTick: {
-                                alignWithLabel: true
-                            },
-                            axisLabel: {
-                                interval: 0,
-                                rotate: -30,
-                                fontFamily: 'serif',
-                                verticalAlign: 'top',
-                                textStyle: {
-                                    color: '#ddd'
-                                }
-                            },
-                            axisLine: {
-                                lineStyle: {
-                                    color: '#ddd'
-                                }
-                            },
-                            data: result[i].series.data.map(function (ele) {
-                                return ele.name
-                            })
-                        },
-                        yAxis: {
-                            type: 'value',
-                            boundaryGap: false,
-                            axisLine: {
-                                lineStyle: {
-                                    color: '#ddd'
-                                }
-                            },
-                            axisTick: {
-                                show: false
-                            },
-                            splitLine: {
-                                show: false
                             }
                         },
-                        series: [{
-                            id: 'map',
-                            data: result[i].series.data
-                        }, {
-                            id: 'bar',
-                            data: result[i].series.data.map(function (ele) {
-                                return ele.value
-                            })
-                        }]
-                    })
-
+                        label: {
+                            normal: {
+                                show: true
+                            },
+                            emphasis: {
+                                show: true
+                            }
+                        },
+                        data: [] //dataParam//人口数据：例如[{name:'济南',value:'100万'},{name:'菏泽'，value:'100万'}......]
+                    }]
                 }
                 myChartProe.setOption(option)
                 //下钻到市
