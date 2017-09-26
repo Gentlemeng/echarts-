@@ -28,7 +28,6 @@ $().ready(function () {
         var index = {
             url: url + '/finddata',
             success: function (result) {
-                console.log(result);
                 // var options = result;
                 for (var i = 0; i < result.length; i++) {
                     var time = result[i].series.date;
@@ -59,7 +58,7 @@ $().ready(function () {
                             //播放按钮的位置
                             controlPosition: 'right',
                             left: '5%',
-                            width: '35%',
+                            width: '48%',
                             //标记的图形样式
                             // symbol:'arrow',
                             symbolSize: '8',
@@ -73,9 +72,8 @@ $().ready(function () {
                                 }
                             },
                             controlStyle: {
-                                normal: {
-                                    color: '#ddd'
-                                }
+                                showPrevBtn:false,
+                                showNextBtn:false
                             },
                             tooltip: {
                                 formatter: function (result) { //回调函数，参数params具体格式参加官方API
@@ -148,8 +146,8 @@ $().ready(function () {
                         grid:
                         //上面的柱状图
                         {
-                            right: '10%',
-                            width: '40%',
+                            right: '5%',
+                            width: '35%',
                             height: '35%'
                         },
                         //下面的柱状图
@@ -168,7 +166,7 @@ $().ready(function () {
                                 type: 'map',
                                 map: 'china', //要和echarts.registerMap（）中第一个参数一致
                                 left: '10%',
-                                width: '30%',
+                                width: '35%',
                                 //
                                 roam: true,
                                 // scaleLimit: {
@@ -315,98 +313,44 @@ $().ready(function () {
         }
         $.ajax(index);
         //点击省份 显示排名 等
+        var areaCode,targetTime;
         chart.on('click', function (proData) {
-            
             //判断如果单击的是地图
+            
             if (proData.componentSubType == "map") {
-                // console.log(proData);
+                
                 //通过省的名称来获取省的行政代码
-                var proName=proData.name,
-                areaCode;
-                // console.log(proName);
+                var proName=proData.name;
                 for(var i=0;i<treeData.area.length;i++){
                     if(treeData.area[i].text==proName){
                         areaCode=treeData.area[i].id;
+                        break;
                     }
                 }
-                // console.log(areaCode);
-                //本省高亮
-                //
-                function orderByPro (date,areaCode){
-                    $('#areaCode').val(areaCode)
-                    // console.log($('.industry option:selected').attr('id'))
-                    $('#industry').val($('.industry option:selected').attr('id'));
-                    $('#indexName').val($('.indexName option:selected').val())
-                    $('#date').val(date);
-                    var formData=$('#form').serialize();
-                    //请求本省在全国的排名数据
-                    var orderByALL={
-                        url:url+'/findRankVaDatas',
-                        // type:'get',
-                        data:formData,
-                        success:function(result){
-                            if(!result){
-                                alert('该地区数据不存在');
-                                return 
-                            }
-                            console.log(result);
-                            //渲染柱状图
-                            var areaNameData=[],values=[];
-                            for(var i=0;i<result.countryRank.length;i++){
-                                areaNameData.push(result.countryRank[i].name);
-                                values.push(result.countryRank[i].value)
-                            }
-                            
-                            var orderOptions=option.options;
-                            // console.log(orderOptions[0].series[1].data)
-                            //将options中的xy轴数据删除，并添加上排名之后的数据
-                            for(var i=0;i<timeData.length;i++){
-                                //删除掉x(name)和y(value)的配置
-                                orderOptions[i].xAxis.data=null;//从第0位开始，删除一个
-                                orderOptions[i].series[1].data=null;//从第1位开始，删除一个
-                                if(date==timeData[i]){
-                                    orderOptions[i].xAxis.data=areaNameData;
-                                    orderOptions[i].series[1].data=values;
-                                }else if(!date){
-                                    orderOptions[0].xAxis.data=areaNameData;
-                                    orderOptions[0].series[1].data=values; 
-                                }
-                            }
-                            // console.log(orderOptions);
-                            //依据时间数组 找到需要修改的options中xAxis\data的值
-                            // for(var i=0;i<timeData.length;i++){
-                            //     if(!date){
-                            //         orderOptions[0].xAxis.data=areaNameData;
-                            //         orderOptions[0].series[1].data=values; 
-                            //     }else if(date==timeData[i]){
-                            //         console.log(i);
-                            //         orderOptions[i].xAxis.data=areaNameData;
-                            //         orderOptions[i].series[1].data=values; 
-                            //     }
-                            // }                  
-                            // for(var i=0;i<orderOptions.length;i++){
-                            //     orderOptions[i].xAxis.data=areaNameData;
-                            //     orderOptions[i].series[1].data=values;
-                            // }
-                            chart.setOption(option); 
-                        }
-                    }
-                    $.ajax(orderByALL)
+                //配置timeLine 显示最开始时期
+                // option.baseOption.timeline.currentIndex=0;
+                if(!targetTime){
+                    targetTime='2007-01-31'
+                    orderByPro(targetTime,areaCode);
+                    return 
                 }
-                orderByPro(null,areaCode);
+                orderByPro(targetTime,areaCode);                
+            }else{
+                return 
             }
-            chart.on('timelinechanged',function(timeChangeData){
-                // console.log(timeChangeData);
-                console.log(timeData[timeChangeData.currentIndex])
-                //通过timeChangeData的索引和timeData来获取目标时间
-                var targetTime=timeData[timeChangeData.currentIndex]
-                orderByPro(targetTime,areaCode);
-                
-            })
         })
-       
-
-
+        chart.on('timelinechanged',function(timeChangeData){
+            // option.baseOption.timeline.currentIndex=null;
+            // console.log(timeChangeData);
+            // console.log(timeData[timeChangeData.currentIndex])
+            //通过timeChangeData的索引和timeData来获取目标时间
+            // if(timeChangeData)
+            targetTime=timeData[timeChangeData.currentIndex]
+            if(areaCode){
+                orderByPro(targetTime,areaCode);  
+            }
+               
+        })
         //下钻到省
         chart.on('dblclick', function (result) { //回调函数，点击时触发，参数params格式参加官方API
             // console.log(result);
@@ -761,10 +705,59 @@ $().ready(function () {
         window.addEventListener("resize", function () {
             chart.resize();
         });
-    });
 
+
+        //省的排名渲染
+        function orderByPro (date,areaCode){
+            $('#areaCode').val(areaCode)
+            // console.log($('.industry option:selected').attr('id'))
+            $('#industry').val($('.industry option:selected').attr('id'));
+            $('#indexName').val($('.indexName option:selected').val())
+            $('#date').val(date);
+            var formData=$('#form').serialize();
+            //请求本省在全国的排名数据
+            var orderByALL={
+                url:url+'/findRankVaDatas',
+                // type:'get',
+                data:formData,
+                success:function(result){
+                    console.log(result);
+                    // if(!result){
+                    //     alert('该地区数据不存在');
+                    //     return 
+                    // }
+                    if(result){
+                        //渲染柱状图
+                        var areaNameData=[],values=[];
+                        for(var i=0;i<result.countryRank.length;i++){
+                            areaNameData.push(result.countryRank[i].name);
+                            values.push(result.countryRank[i].value);
+                        }
+                        
+                        var orderOptions=option.options;
+                        // console.log(orderOptions[0].series[1].data)
+                        //将options中的xy轴数据删除，并添加上排名之后的数据
+                        for(var i=0;i<timeData.length;i++){
+                            //删除掉x(name)和y(value)的配置
+                            orderOptions[i].xAxis.data=null;//从第0位开始，删除一个
+                            orderOptions[i].series[1].data=null;//从第1位开始，删除一个
+                            if(date==timeData[i]){
+                                orderOptions[i].xAxis.data=areaNameData;
+                                orderOptions[i].series[1].data=values;
+                                // break;
+                            }
+                        }
+                    }
+                    chart.setOption(option); 
+                }
+            }
+            $.ajax(orderByALL)
+        }
+    });
+    
 });
 
+    
 //模拟省份数据
 // for (var i = 0; i < 7; i++) {
 //     var preYearData = {}
