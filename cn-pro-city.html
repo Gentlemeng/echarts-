@@ -7,29 +7,16 @@
 	<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="./css/index.css">
 	<title></title>
-	<script>
-		function goBackChinaMap() {
-			$('#china_map').css('display', 'block');
-			$('#city_map').css('display', 'none');
-			$('#proe_map').css('display', 'none');
-		}
-
-		function goBackProeMap() {
-			$('#china_map').css('display', 'none');
-			$('#city_map').css('display', 'none');
-			$('#proe_map').css('display', 'block');
-		}
-	</script>
 </head>
 <body>
 
 	<div id="main">
 		<div id="china_map"></div>
 		<div class="retChina">
-			<a href="javascript:;" onclick="goBackChinaMap()">返回全国</a>
+			<a href="javascript:;" class="backChina">返回全国</a>
 		</div>
 		<div class="retPro">
-			<a href="javascript:;" onclick="goBackProeMap()">返回本省</a>
+			<a href="javascript:;" class="backProvice">返回本省</a>
 		</div>
 		<div class="selectForm">
 			<form action="javascript:;" id="form">
@@ -58,7 +45,6 @@
 	<script type="text/javascript" src="./node_modules/art-template/lib/template-web.js"></script>
 	<script type="text/javascript" src="./js/citycode.js"></script>
 	<script type="text/javascript" src="./js/util.js"></script>
-	
 	<script src="./js/index.js"></script>
 </body>
 
