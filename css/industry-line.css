@@ -1,0 +1,155 @@
+@charset "utf-8";
+
+/* CSS Document */
+html{
+    background-color: #18214b;
+}
+body {
+    margin: 0;
+    font-size: 12px;
+    color: #383838;
+    line-height: 1.8;
+    font-family: "microsoft yahei";
+}
+form,ul,li,ol,li,dl,dt,dd,img,p,h1,h2,h3,h4,h5,h6,input,table,th,tr {
+    margin: 0;
+    padding: 0;
+}
+h1,h2,h3,h4,h5,h6 {
+    font-size: 12px;
+}
+input,select {
+    font-size: 12px;
+    outline: none;
+}
+img {
+    border: 0;
+}
+ul,li {
+    list-style-type: none;
+}
+strong,b {
+    font-weight: bold;
+}
+em {
+    font-style: normal;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-weight: normal;
+}
+a {
+    color: #393939;
+    text-decoration: none;
+    cursor: pointer;
+}
+.display_no {
+    display: none;
+}
+.display_yes {
+    display: block;
+}
+.fl {
+    float: left;
+}
+.fr {
+    float: right;
+}
+.clear {
+    clear: both;
+}
+/* main */
+/* main */
+#main {
+    height: 800px;
+    width: 100%;
+    margin: 50px auto;
+    /* border: 1px solid #ccc; */
+    background: #121a41;
+    position: relative;
+}
+#main-con{
+    width:100%;
+    height:650px;
+    position: absolute;
+    top:96px;
+}
+#line-list,#line,#comment{
+    float:left;
+    height:650px;    
+}
+/* 左边三个折线图 */
+#line-list{
+    width:30%;
+}
+#line1,#line2,#line3{
+    height:216px;
+}
+/* 中间折线图部分 */
+#line{
+    width:40%;
+    position: relative;
+}
+#wrap1,#wrap2,#wrap3{
+    width:100%;
+    height:650px;
+    position: absolute;
+    top:0;
+    left:0;
+}
+#wrap1,#wrap2{
+    display: none;
+}
+#lineDetail1,#lineDetail2,#lineDetail3{
+    width:100%;
+    height:650px;
+}
+#comment{
+    width:25%;
+}
+/* 返回按钮 */
+.retChina,.retPro{
+    display:inline-block;
+    z-index:999;
+    position: absolute;
+    top:50px;
+    left:10px;
+    background-color:#121a41;
+}
+.retPro{
+    left:100px;
+}
+.retChina a , .retPro a{
+    display:inline-block;
+    height:34px;
+    background:#121a41;
+    line-height: 34px;
+    border:1px solid #ccc;
+    padding:0px 10px;
+    margin-left:20px;
+    border-radius:5px;
+    cursor: pointer;
+    color:#ccc;
+    text-decoration:none;
+}
+/* 三个选项 */
+.selectForm{
+    position: absolute;
+    left:230px;
+    top:50px;
+}
+.selectForm form>*{
+    display:inline-block;
+}
+.selectForm form >select{
+    width: 200px;
+    margin-right:5px;
+    background-color:#121a41;
+    color:#ccc;
+}
+.selectForm form option{
+
+}
+#confirm{
+    margin-bottom:5px;
+}

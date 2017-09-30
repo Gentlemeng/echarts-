@@ -2518,6 +2518,7 @@ var treeData = {
     ]
 }
 var cityGeoMapping = {
+    "中国":"json/china.json",
     "上海":"json/上海/上海.json",
     "临沧市":"json/云南/临沧市.json",
     "丽江市":"json/云南/丽江市.json",

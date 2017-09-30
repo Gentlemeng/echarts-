@@ -82,15 +82,18 @@ a {
 }
 /* 全国 */
 #china_map{
-    width:100%;height:650px;margin:0 auto;position: absolute;top:96px;display: block;
+    width:50%;height:650px;margin:0 auto;position: absolute;top:96px;display: block;
 }
-/* 省 */
-#proe_map{
-    width:960px;height:650px;margin:0 auto;position: absolute;top:10px;left:80px;display: none;
+#bar{
+    width:50%;
+    height:650px;
+    /* margin:0 auto; */
+    position: absolute;
+    top:96px; 
+    right:0;
 }
-/* 市 */
-#city_map{
-    width:960px;height:650px;margin:0 auto;position: absolute;top:10px;left:80px;display: none;
+#bar1,#bar2{
+    height: 325px;
 }
 /* 返回按钮 */
 .retChina,.retPro{

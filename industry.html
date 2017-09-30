@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="./css/industry.css">
+	<title></title>
+</head>
+<body>
+	<div id="main">
+        <!-- 地图 -->
+        <div id="main-con" class="clear">
+            <div id="china_map"></div>
+            <div id="line">
+                <div id="line-top"></div>
+            </div>
+        </div>
+        <div class="retChina">
+                <a href="javascript:;" class="backChina">返回全国</a>
+            </div>
+            <div class="retPro">
+                <a href="javascript:;" class="backProvice">返回本省</a>
+            </div>
+            <div class="selectForm">
+                <form action="javascript:;" id="form">
+                    <input id="industry" type="hidden" name="indusId" value="">
+                    <select class="form-control industry">
+                    </select>
+                    <input id="areaCode" type="hidden" name="areaCode" value="">				
+                    <button type="submit" class="btn" id="confirm">确定</button>
+                </form>
+            </div>
+	</div>
+	<script id="indus-list" type="text/html">
+		{{each indus_list item}}
+		<option id="{{item.indusId}}">{{item.indusName}}</option>
+		{{/each}}
+	</script>
+	<script type="text/javascript" src="./node_modules/jquery/dist/jquery.min.js"></script>
+	<script type="text/javascript" src="./node_modules/echarts/dist/echarts.min.js"></script>
+	<script type="text/javascript" src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="./node_modules/art-template/lib/template-web.js"></script>
+	<script type="text/javascript" src="./js/citycode.js"></script>
+	<script type="text/javascript" src="./js/util.js"></script>
+	<script src="./js/industry.js"></script>
+</body>
+
+</html>
+
